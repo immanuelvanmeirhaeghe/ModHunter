@@ -46,7 +46,7 @@ namespace ModHunter
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Home))
+            if (IsLocalOrHost && Input.GetKeyDown(KeyCode.Pause))
             {
                 if (!showUI)
                 {
@@ -66,7 +66,7 @@ namespace ModHunter
                 }
             }
 
-            if (!IsOptionInstantFinishConstructionsActive && !IsLocalOrHost && IsModHunterActive && Input.GetKeyDown(KeyCode.F8))
+            if (!IsOptionInstantFinishConstructionsActive && IsLocalOrHost && IsModHunterActive && Input.GetKeyDown(KeyCode.F8))
             {
                 ShowHUDBigInfo("Feature disabled in multiplayer!", "Mod Hunter Info", HUDInfoLogTextureType.Count.ToString());
             }
@@ -99,26 +99,26 @@ namespace ModHunter
 
         private void InitModUI()
         {
-            GUI.Box(new Rect(10f, 10f, 550f, 100f), "ModHunter UI", GUI.skin.window);
+            GUI.Box(new Rect(10f, 170f, 450f, 150f), "ModHunter UI", GUI.skin.window);
 
-            GUI.Label(new Rect(30f, 30f, 300f, 20f), "Click to unlock all weapons, armor and traps", GUI.skin.label);
-            if (GUI.Button(new Rect(350f, 30f, 150f, 20f), "Unlock Hunter", GUI.skin.button))
+            GUI.Label(new Rect(30f, 190f, 200f, 20f), "Click to unlock all weapons, armor and traps", GUI.skin.label);
+            if (GUI.Button(new Rect(280f, 190f, 150f, 20f), "Unlock hunter", GUI.skin.button))
             {
                 OnClickUnlockHunterButton();
                 showUI = false;
                 EnableCursor(false);
             }
 
-            GUI.Label(new Rect(30f, 50f, 300f, 20f), "Click to get tribal weapons", GUI.skin.label);
-            if (GUI.Button(new Rect(350f, 50f, 150f, 20f), "Get Tribal", GUI.skin.button))
+            GUI.Label(new Rect(30f, 210f, 200f, 20f), "Click to get tribal weapons", GUI.skin.label);
+            if (GUI.Button(new Rect(280f, 210f, 150f, 20f), "Get tribal", GUI.skin.button))
             {
                 OnClickGetTribalButton();
                 showUI = false;
                 EnableCursor(false);
             }
 
-            GUI.Label(new Rect(30f, 70f, 300f, 20f), "Use F8 to instantly finish constructions", GUI.skin.label);
-            IsOptionInstantFinishConstructionsActive = GUI.Toggle(new Rect(350f, 70f, 20f, 20f), IsOptionInstantFinishConstructionsActive, "");
+            GUI.Label(new Rect(30f, 240f, 200f, 20f), "Use F8 to instantly finish constructions", GUI.skin.label);
+            IsOptionInstantFinishConstructionsActive = GUI.Toggle(new Rect(280f, 240f, 20f, 20f), IsOptionInstantFinishConstructionsActive, "");
 
         }
 

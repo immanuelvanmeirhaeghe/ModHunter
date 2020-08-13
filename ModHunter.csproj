@@ -22,11 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Extensions\ConstructionGhostManagerExtended.cs" />
-    <Compile Include="Extensions\PlayerExtended.cs" />
-    <Compile Include="Extensions\TrapExtended.cs" />
-    <Compile Include="ModHunter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BaseModLib">
@@ -347,6 +342,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ConstructionGhostManagerExtended.cs" />
+    <Compile Include="Extensions\PlayerExtended.cs" />
+    <Compile Include="Extensions\TrapExtended.cs" />
+    <Compile Include="ModHunter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
