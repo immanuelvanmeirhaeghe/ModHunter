@@ -99,7 +99,7 @@ namespace ModHunter
 
         private void InitModUI()
         {
-            GUI.Box(new Rect(10f, 170f, 450f, 150f), "ModHunter UI", GUI.skin.window);
+            GUI.Box(new Rect(10f, 170f, 450f, 150f), "ModHunter UI - Press PAUSE to open/close", GUI.skin.window);
 
             GUI.Label(new Rect(30f, 190f, 200f, 20f), "Click to unlock all weapons, armor and traps", GUI.skin.label);
             if (GUI.Button(new Rect(280f, 190f, 150f, 20f), "Unlock hunter", GUI.skin.button))
@@ -146,7 +146,8 @@ namespace ModHunter
         {
             try
             {
-                GetTribal();
+                GetTribalMeleeWeapons();
+                GetTribalArrows(5);
             }
             catch (Exception exc)
             {
@@ -186,7 +187,7 @@ namespace ModHunter
             }
         }
 
-        public static void GetTribal()
+        public static void GetTribalMeleeWeapons(int count = 1)
         {
             try
             {
@@ -196,20 +197,37 @@ namespace ModHunter
                         ItemID.Stick_Blade,
                         ItemID.Tribe_Axe,
                         ItemID.Tribe_Bow,
-                        ItemID.Tribe_Spear,
-                        ItemID.Tribe_Arrow
+                        ItemID.Tribe_Spear
                     };
                 foreach (ItemID tribalWeaponItemID in tribalWeaponItemIDList)
                 {
                     ItemInfo tribalWeaponItemInfo = itemsManager.GetInfo(tribalWeaponItemID);
                     itemsManager.UnlockItemInfo(tribalWeaponItemInfo.m_ID.ToString());
                     player.AddItemToInventory(tribalWeaponItemInfo.m_ID.ToString());
-                    ShowHUDInfoLog(tribalWeaponItemInfo.m_ID.ToString(), "HUD_InfoLog_Backpack");
+                    ShowHUDBigInfo($"Added {count} x {itemsManager.GetInfo(tribalWeaponItemID).GetNameToDisplayLocalized()} to inventory", "Mod Hunter Info", HUDInfoLogTextureType.Count.ToString());
                 }
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{nameof(ModHunter)}.{nameof(ModHunter)}:{nameof(GetTribal)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{nameof(ModHunter)}.{nameof(ModHunter)}:{nameof(GetTribalMeleeWeapons)}] throws exception: {exc.Message}");
+            }
+        }
+
+        public static void GetTribalArrows(int count = 1)
+        {
+            try
+            {
+                itemsManager.UnlockItemInfo(ItemID.Tribe_Arrow.ToString());
+                ItemInfo tribalArrowItemInfo = itemsManager.GetInfo(ItemID.Tribe_Arrow);
+                for (int i = 0; i < count; i++)
+                {
+                    player.AddItemToInventory(tribalArrowItemInfo.m_ID.ToString());
+                }
+                ShowHUDBigInfo($"Added {count} x {itemsManager.GetInfo(ItemID.Tribe_Arrow).GetNameToDisplayLocalized()} to inventory", "Mod Hunter Info", HUDInfoLogTextureType.Count.ToString());
+            }
+            catch (Exception exc)
+            {
+                ModAPI.Log.Write($"[{nameof(ModHunter)}.{nameof(ModHunter)}:{nameof(GetTribalArrows)}] throws exception: {exc.Message}");
             }
         }
 
