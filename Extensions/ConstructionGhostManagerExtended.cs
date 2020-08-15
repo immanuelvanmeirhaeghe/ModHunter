@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace ModHunter.Extensions
+namespace ModHunter
 {
     class ConstructionGhostManagerExtended : ConstructionGhostManager
     {
