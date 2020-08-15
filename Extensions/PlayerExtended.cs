@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ModHunter
+namespace ModHunter.Extensions
 {
     /// <summary>
     /// Inject modding interface into game only in single player mode

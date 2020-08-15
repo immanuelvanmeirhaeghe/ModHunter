@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace ModHunter
+namespace ModHunter.Extensions
 {
     class ConstructionGhostManagerExtended : ConstructionGhostManager
     {
         protected override void Update()
         {
-                if ( (ModHunter.Get().IsLocalOrHost || ModHunter.Get().IsModHunterActiveForMultiplayer) && ModHunter.Get().UseOptionF8  && Input.GetKeyDown(KeyCode.F8))
+                if ( (ModHunter.Get().IsLocalOrHost || ModHunter.Get().IsModActiveForMultiplayer) && ModHunter.Get().UseOptionF8  && Input.GetKeyDown(KeyCode.F8))
                 {
                     foreach (ConstructionGhost m_Unfinished in m_AllGhosts.Where(
                                               m_Ghost => m_Ghost.gameObject.activeSelf

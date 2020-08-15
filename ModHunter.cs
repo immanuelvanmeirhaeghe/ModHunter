@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ModManager;
 using UnityEngine;
 
 namespace ModHunter
@@ -36,7 +34,7 @@ namespace ModHunter
         /// Based on request in chat: use  !requestMods in chat as client to request the host to activate mods for them.
         /// </summary>
         /// <returns>true if enabled, else false</returns>
-        public bool IsModHunterActiveForMultiplayer => FindObjectOfType(typeof(ModManager.ModManager)) != null ? ModManager.ModManager.AllowModsForMultiplayer : false ;
+        public bool IsModActiveForMultiplayer => FindObjectOfType(typeof(ModManager.ModManager)) != null ? ModManager.ModManager.AllowModsForMultiplayer : false ;
 
         public ModHunter()
         {
@@ -51,7 +49,7 @@ namespace ModHunter
 
         private void Update()
         {
-            if ((IsLocalOrHost || IsModHunterActiveForMultiplayer) && Input.GetKeyDown(KeyCode.Pause))
+            if ((IsLocalOrHost || IsModActiveForMultiplayer) && Input.GetKeyDown(KeyCode.Pause))
             {
                 if (!showUI)
                 {
