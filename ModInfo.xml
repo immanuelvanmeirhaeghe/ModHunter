@@ -1,10 +1,10 @@
 <Mod ID="ModHunter">
-  <Compatible>1.8.0</Compatible>
+  <Compatible>1.8.1</Compatible>
   <Name>
     <EN>ModHunter</EN>
   </Name>
   <Description>
     <EN>ModHunter is a mod for Green Hell that gives the player the option to unlock all weapons, traps and armor. The player can also get tribal weapons and choose to enable instant finishing of any ongoing building.</EN>
   </Description>
-  <Version>1.0.1.0</Version>
+  <Version>1.0.2.0</Version>
 </Mod>
