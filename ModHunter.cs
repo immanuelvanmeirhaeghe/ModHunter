@@ -115,8 +115,8 @@ namespace ModHunter
                 EnableCursor(false);
             }
 
-            GUI.Label(new Rect(30f, 240f, 200f, 20f), "Use F8 to instantly finish constructions", GUI.skin.label);
-            IsOptionInstantFinishConstructionsActive = GUI.Toggle(new Rect(280f, 240f, 20f, 20f), IsOptionInstantFinishConstructionsActive, "");
+            GUI.Label(new Rect(30f, 230f, 200f, 20f), "Use F8 to instantly finish constructions", GUI.skin.label);
+            IsOptionInstantFinishConstructionsActive = GUI.Toggle(new Rect(280f, 230f, 20f, 20f), IsOptionInstantFinishConstructionsActive, "");
 
         }
 
