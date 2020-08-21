@@ -7,7 +7,7 @@ namespace ModHunter
     {
         protected override void Update()
         {
-                if ( (ModHunter.Get().IsLocalOrHost || ModHunter.Get().IsModActiveForMultiplayer) && ModHunter.Get().UseOptionF8  && Input.GetKeyDown(KeyCode.F8))
+                if ( (ModHunter.Get().IsModActiveForSingleplayer || ModHunter.Get().IsModActiveForMultiplayer) && ModHunter.Get().UseOptionF8  && Input.GetKeyDown(KeyCode.F8))
                 {
                     foreach (ConstructionGhost m_Unfinished in m_AllGhosts.Where(
                                               m_Ghost => m_Ghost.gameObject.activeSelf

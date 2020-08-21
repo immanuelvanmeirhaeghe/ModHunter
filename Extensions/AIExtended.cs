@@ -1,15 +1,15 @@
-﻿using Enums;
-using UnityEngine;
-
-namespace ModHunter.Extensions
+﻿namespace ModHunter
 {
     class AIExtended : AIs.AI
     {
         protected override void UpdateSwimming()
         {
-            if (!IsDead() && (IsCat() || IsEnemy() || IsPredator()))
+            if ((ModHunter.Get().IsModActiveForSingleplayer || ModHunter.Get().IsModActiveForMultiplayer) && ModHunter.Get().UseOptionAI)
             {
-                m_Params.m_CanSwim = true;
+                if (!IsDead() && (IsCat() || IsEnemy() || IsPredator()))
+                {
+                    m_Params.m_CanSwim = true;
+                }
             }
             base.UpdateSwimming();
         }

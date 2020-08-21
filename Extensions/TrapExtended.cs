@@ -1,7 +1,7 @@
 ﻿using Enums;
 using UnityEngine;
 
-namespace ModHunter.Extensions
+namespace ModHunter
 {
     class TrapExtended : Trap
     {
