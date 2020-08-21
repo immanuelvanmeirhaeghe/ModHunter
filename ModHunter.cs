@@ -6,6 +6,13 @@ using UnityEngine;
 
 namespace ModHunter
 {
+    /// <summary>
+    /// ModHunter is a mod for Green Hell that allows a player to unlock all weapons, armor and traps.
+	/// A player can get tribal weapons.
+    /// It also gives the AI the possibility to swim if enabled.
+    /// (only in single player mode - Use ModManager for multiplayer).
+    /// Enable the mod UI by pressing Home.
+    /// </summary>
     public class ModHunter : MonoBehaviour
     {
         private static ModHunter s_Instance;
@@ -26,7 +33,6 @@ namespace ModHunter
                         ItemID.Tribe_Bow,
                         ItemID.Tribe_Spear
                     };
-
         private static List<ItemInfo> m_UnlockedHunterItemInfos = new List<ItemInfo>();
         public static bool HasUnlockedHunter { get; private set; }
         public bool UseOptionF8 { get; private set; }
@@ -115,6 +121,7 @@ namespace ModHunter
             if (showUI)
             {
                 InitData();
+				InitSkinUI();
                 InitModUI();
             }
         }
@@ -122,12 +129,8 @@ namespace ModHunter
         private static void InitData()
         {
             hUDManager = HUDManager.Get();
-
             itemsManager = ItemsManager.Get();
-
             player = Player.Get();
-
-            InitSkinUI();
         }
 
         private static void InitSkinUI()
@@ -155,38 +158,38 @@ namespace ModHunter
                 EnableCursor(false);
             }
 
-            CreateF8Option();
-
             CreateAIOption();
-        }
 
-        private void CreateF8Option()
-        {
-            if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
-            {
-                GUI.Label(new Rect(30f, 230f, 200f, 20f), "Use F8 to instantly finish", GUI.skin.label);
-                UseOptionF8 = GUI.Toggle(new Rect(280f, 230f, 20f, 20f), UseOptionF8, "");
-            }
-            else
-            {
-                GUI.Label(new Rect(30f, 230f, 330f, 20f), "Use F8 to instantly to finish any constructions", GUI.skin.label);
-                GUI.Label(new Rect(30f, 250f, 200f, 20f), "is only for single player or when host", GUI.skin.label);
-                GUI.Label(new Rect(30f, 270f, 200f, 20f), "Host can activate using ModManager.", GUI.skin.label);
-            }
+            //CreateF8Option();
         }
 
         private void CreateAIOption()
         {
             if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
             {
-                GUI.Label(new Rect(30f, 250f, 200f, 20f), "AI can swim?", GUI.skin.label);
-                UseOptionAI = GUI.Toggle(new Rect(280f, 250f, 20f, 20f), UseOptionAI, "");
+                GUI.Label(new Rect(30f, 230f, 200f, 20f), "AI can swim?", GUI.skin.label);
+                UseOptionAI = GUI.Toggle(new Rect(280f, 230f, 20f, 20f), UseOptionAI, "");
             }
             else
             {
-                GUI.Label(new Rect(30f, 250f, 330f, 20f), "AI can swim option", GUI.skin.label);
-                GUI.Label(new Rect(30f, 270f, 200f, 20f), "is only for single player or when host", GUI.skin.label);
-                GUI.Label(new Rect(30f, 290f, 200f, 20f), "Host can activate using ModManager.", GUI.skin.label);
+                GUI.Label(new Rect(30f, 230f, 330f, 20f), "AI can swim option", GUI.skin.label);
+                GUI.Label(new Rect(30f, 250f, 330f, 20f), "is only for single player or when host", GUI.skin.label);
+                GUI.Label(new Rect(30f, 270f, 330f, 20f), "Host can activate using ModManager.", GUI.skin.label);
+            }
+        }
+
+        private void CreateF8Option()
+        {
+            if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
+            {
+                GUI.Label(new Rect(30f, 250f, 200f, 20f), "Use F8 to instantly finish", GUI.skin.label);
+                UseOptionF8 = GUI.Toggle(new Rect(280f, 250f, 20f, 20f), UseOptionF8, "");
+            }
+            else
+            {
+                GUI.Label(new Rect(30f, 250f, 330f, 20f), "Use F8 to instantly to finish any constructions", GUI.skin.label);
+                GUI.Label(new Rect(30f, 270f, 330f, 20f), "is only for single player or when host", GUI.skin.label);
+                GUI.Label(new Rect(30f, 290f, 330f, 20f), "Host can activate using ModManager.", GUI.skin.label);
             }
         }
 
@@ -207,7 +210,7 @@ namespace ModHunter
             try
             {
                 GetTribalMeleeWeapons();
-                GetTribalArrows(5);
+                GetMaxFiveTribalArrows(5);
             }
             catch (Exception exc)
             {
@@ -265,7 +268,7 @@ namespace ModHunter
             }
         }
 
-        public static void GetTribalArrows(int count = 1)
+        public static void GetMaxFiveTribalArrows(int count = 1)
         {
             try
             {
@@ -283,7 +286,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{nameof(ModHunter)}.{nameof(ModHunter)}:{nameof(GetTribalArrows)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{nameof(ModHunter)}.{nameof(ModHunter)}:{nameof(GetMaxFiveTribalArrows)}] throws exception: {exc.Message}");
             }
         }
 

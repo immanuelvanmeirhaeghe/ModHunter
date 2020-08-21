@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ModAPI.ModHunter")]
-[assembly: AssemblyDescription("ModHunter is a mod for Green Hell that gives the player the option to unlock all weapons, traps and armor. The player can also get tribal weapons and choose to enable instant finishing of any ongoing building.")]
+[assembly: AssemblyDescription("ModHunter is a mod for Green Hell that gives the player the option to unlock all weapons, traps and armor. The player can also get tribal weapons.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Dragon Legion")]
 [assembly: AssemblyProduct("ModHunter.Properties")]
