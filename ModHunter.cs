@@ -124,7 +124,8 @@ namespace ModHunter
 
         private void InitWindow()
         {
-            ModHunterWindow = GUI.Window(0, ModHunterWindow, InitModWindow, $"{nameof(ModHunter)}", GUI.skin.window);
+            int wid = GetHashCode();
+            ModHunterWindow = GUI.Window(wid, ModHunterWindow, InitModWindow, $"{nameof(ModHunter)}", GUI.skin.window);
         }
 
         private void InitData()
