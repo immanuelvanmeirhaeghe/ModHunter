@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("ModHunter is a mod for Green Hell that gives the player the option to unlock all weapons, traps and armor. The player can also get tribal weapons.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Dragon Legion")]
-[assembly: AssemblyProduct("ModHunter.Properties")]
+[assembly: AssemblyProduct("ModAPI.ModHunter")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.2.1")]
-[assembly: AssemblyFileVersion("1.0.2.1")]
+[assembly: AssemblyVersion("1.0.2.4")]
+[assembly: AssemblyFileVersion("1.0.2.4")]

@@ -1,5 +1,8 @@
 ﻿namespace ModHunter
 {
+    /// <summary>
+    /// Modded
+    /// </summary>
     class AIExtended : AIs.AI
     {
         protected override void UpdateSwimming()

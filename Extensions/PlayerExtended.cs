@@ -10,7 +10,7 @@ namespace ModHunter
         protected override void Start()
         {
             base.Start();
-            new GameObject("__ModHunter__").AddComponent<ModHunter>();
+            new GameObject($"__{nameof(ModHunter)}__").AddComponent<ModHunter>();
         }
     }
 }

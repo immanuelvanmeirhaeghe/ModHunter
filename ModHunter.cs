@@ -19,6 +19,8 @@ namespace ModHunter
 
         private bool showUI = false;
 
+        public Rect ModHunterWindow = new Rect(10f, 170f, 450f, 150f);
+
         private static ItemsManager itemsManager;
 
         private static Player player;
@@ -27,28 +29,23 @@ namespace ModHunter
 
         private static readonly List<ItemID> m_TribalWeaponItemIDList = new List<ItemID>
                     {
+                        ItemID.metal_axe,
                         ItemID.Obsidian_Bone_Blade,
-                        ItemID.Stick_Blade,
-                        ItemID.Tribe_Axe,
+                        /// ItemID.Tribe_Axe,
                         ItemID.Tribe_Bow,
                         ItemID.Tribe_Spear
                     };
         private static List<ItemInfo> m_UnlockedHunterItemInfos = new List<ItemInfo>();
-        public static bool HasUnlockedHunter { get; private set; }
+        public bool HasUnlockedHunter { get; private set; }
         public bool UseOptionF8 { get; private set; }
         public bool UseOptionAI { get; private set; }
 
-        /// <summary>
-        /// ModAPI required security check to enable this mod feature for multiplayer.
-        /// See <see cref="ModManager"/> for implementation.
-        /// Based on request in chat: use  !requestMods in chat as client to request the host to activate mods for them.
-        /// </summary>
-        /// <returns>true if enabled, else false</returns>
-        public bool IsModActiveForMultiplayer => FindObjectOfType(typeof(ModManager.ModManager)) != null ? ModManager.ModManager.AllowModsForMultiplayer : false;
+        public bool IsModActiveForMultiplayer => FindObjectOfType(typeof(ModManager.ModManager)) != null && ModManager.ModManager.AllowModsForMultiplayer;
         public bool IsModActiveForSingleplayer => ReplTools.AmIMaster();
 
         public ModHunter()
         {
+            useGUILayout = true;
             s_Instance = this;
         }
 
@@ -79,12 +76,12 @@ namespace ModHunter
             hudBigInfo.Show(true);
         }
 
-        private static void EnableCursor(bool enabled = false)
+        private void EnableCursor(bool blockPlayer = false)
         {
-            CursorManager.Get().ShowCursor(enabled, false);
+            CursorManager.Get().ShowCursor(blockPlayer, false);
             player = Player.Get();
 
-            if (enabled)
+            if (blockPlayer)
             {
                 player.BlockMoves();
                 player.BlockRotation();
@@ -121,60 +118,79 @@ namespace ModHunter
             if (showUI)
             {
                 InitData();
-				InitSkinUI();
-                InitModUI();
+                InitSkinUI();
+                InitWindow();
             }
         }
 
-        private static void InitData()
+        private void InitWindow()
+        {
+            ModHunterWindow = GUI.Window(0, ModHunterWindow, InitModWindow, $"{nameof(ModHunter)}", GUI.skin.window);
+        }
+
+        private void InitData()
         {
             hUDManager = HUDManager.Get();
             itemsManager = ItemsManager.Get();
             player = Player.Get();
         }
 
-        private static void InitSkinUI()
+        private void InitSkinUI()
         {
             GUI.skin = ModAPI.Interface.Skin;
         }
 
-        private void InitModUI()
+        private void InitModWindow(int windowId)
         {
-            GUI.Box(new Rect(10f, 170f, 450f, 150f), "ModHunter UI - Press HOME to open/close", GUI.skin.window);
+            if (GUI.Button(new Rect(440f, 170f, 20f, 20f), "X", GUI.skin.button))
+            {
+                CloseWindow();
+            }
 
-            GUI.Label(new Rect(30f, 190f, 200f, 20f), "Click to unlock all weapons, armor and traps", GUI.skin.label);
+            GUI.Label(new Rect(30f, 190f, 200f, 20f), "All weapon-, armor- and trap blueprints", GUI.skin.label);
             if (GUI.Button(new Rect(280f, 190f, 150f, 20f), "Unlock hunter", GUI.skin.button))
             {
                 OnClickUnlockHunterButton();
-                showUI = false;
-                EnableCursor(false);
+                CloseWindow();
             }
 
-            GUI.Label(new Rect(30f, 210f, 200f, 20f), "Click to get tribal weapons", GUI.skin.label);
+            GUI.Label(new Rect(30f, 210f, 200f, 20f), "Metal axe, bow, spear and obsidian bone blade", GUI.skin.label);
             if (GUI.Button(new Rect(280f, 210f, 150f, 20f), "Get tribal weapons", GUI.skin.button))
             {
                 OnClickGetTribalWeaponsButton();
-                showUI = false;
-                EnableCursor(false);
+                CloseWindow();
+            }
+
+            GUI.Label(new Rect(30f, 230f, 200f, 20f), "Add 5 tribal arrows to the backpack", GUI.skin.label);
+            if (GUI.Button(new Rect(280f, 230f, 150f, 20f), "5 x tribal arrows", GUI.skin.button))
+            {
+                OnClickGetTribalArrowsButton();
+                CloseWindow();
             }
 
             CreateAIOption();
 
-            //CreateF8Option();
+            GUI.DragWindow(new Rect(0, 0, 10000, 10000));
+        }
+
+        private void CloseWindow()
+        {
+            showUI = false;
+            EnableCursor(false);
         }
 
         private void CreateAIOption()
         {
             if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
             {
-                GUI.Label(new Rect(30f, 230f, 200f, 20f), "AI can swim?", GUI.skin.label);
-                UseOptionAI = GUI.Toggle(new Rect(280f, 230f, 20f, 20f), UseOptionAI, "");
+                GUI.Label(new Rect(30f, 250f, 200f, 20f), "AI can swim?", GUI.skin.label);
+                UseOptionAI = GUI.Toggle(new Rect(280f, 250f, 20f, 20f), UseOptionAI, "");
             }
             else
             {
-                GUI.Label(new Rect(30f, 230f, 330f, 20f), "AI can swim option", GUI.skin.label);
-                GUI.Label(new Rect(30f, 250f, 330f, 20f), "is only for single player or when host", GUI.skin.label);
-                GUI.Label(new Rect(30f, 270f, 330f, 20f), "Host can activate using ModManager.", GUI.skin.label);
+                GUI.Label(new Rect(30f, 250f, 330f, 20f), "AI can swim option", GUI.skin.label);
+                GUI.Label(new Rect(30f, 270f, 330f, 20f), "is only for single player or when host", GUI.skin.label);
+                GUI.Label(new Rect(30f, 290f, 330f, 20f), "Host can activate using ModManager.", GUI.skin.label);
             }
         }
 
@@ -193,7 +209,7 @@ namespace ModHunter
             }
         }
 
-        private static void OnClickUnlockHunterButton()
+        private void OnClickUnlockHunterButton()
         {
             try
             {
@@ -205,12 +221,11 @@ namespace ModHunter
             }
         }
 
-        private static void OnClickGetTribalWeaponsButton()
+        private void OnClickGetTribalWeaponsButton()
         {
             try
             {
                 GetTribalMeleeWeapons();
-                GetMaxFiveTribalArrows(5);
             }
             catch (Exception exc)
             {
@@ -218,7 +233,19 @@ namespace ModHunter
             }
         }
 
-        public static void UnlockHunter()
+        private void OnClickGetTribalArrowsButton()
+        {
+            try
+            {
+                GetMaxFiveTribalArrows(5);
+            }
+            catch (Exception exc)
+            {
+                ModAPI.Log.Write($"[{nameof(ModHunter)}.{nameof(ModHunter)}:{nameof(OnClickGetTribalArrowsButton)}] throws exception: {exc.Message}");
+            }
+        }
+
+        public void UnlockHunter()
         {
             try
             {
@@ -241,7 +268,7 @@ namespace ModHunter
                 }
                 else
                 {
-                    ShowHUDBigInfo("All hunter items were already unlocked!", "ModHunter Info", HUDInfoLogTextureType.Count.ToString());
+                    ShowHUDBigInfo("All hunter items were already unlocked!", $"{nameof(ModHunter)}  Info", HUDInfoLogTextureType.Count.ToString());
                 }
             }
             catch (Exception exc)
@@ -250,7 +277,7 @@ namespace ModHunter
             }
         }
 
-        public static void GetTribalMeleeWeapons()
+        public void GetTribalMeleeWeapons()
         {
             try
             {
@@ -259,7 +286,7 @@ namespace ModHunter
                     ItemInfo tribalWeaponItemInfo = itemsManager.GetInfo(tribalWeaponItemID);
                     itemsManager.UnlockItemInfo(tribalWeaponItemInfo.m_ID.ToString());
                     player.AddItemToInventory(tribalWeaponItemInfo.m_ID.ToString());
-                    ShowHUDBigInfo($"Added 1 x {tribalWeaponItemInfo.GetNameToDisplayLocalized()} to inventory", "ModHunter Info", HUDInfoLogTextureType.Count.ToString());
+                    ShowHUDBigInfo($"Added 1 x {tribalWeaponItemInfo.GetNameToDisplayLocalized()} to inventory", $"{nameof(ModHunter)} Info", HUDInfoLogTextureType.Count.ToString());
                 }
             }
             catch (Exception exc)
@@ -268,7 +295,7 @@ namespace ModHunter
             }
         }
 
-        public static void GetMaxFiveTribalArrows(int count = 1)
+        public void GetMaxFiveTribalArrows(int count = 1)
         {
             try
             {
@@ -282,13 +309,12 @@ namespace ModHunter
                 {
                     player.AddItemToInventory(tribalArrowItemInfo.m_ID.ToString());
                 }
-                ShowHUDBigInfo($"Added {count} x {tribalArrowItemInfo.GetNameToDisplayLocalized()} to inventory", "ModHunter Info", HUDInfoLogTextureType.Count.ToString());
+                ShowHUDBigInfo($"Added {count} x {tribalArrowItemInfo.GetNameToDisplayLocalized()} to inventory", $"{nameof(ModHunter)} Info", HUDInfoLogTextureType.Count.ToString());
             }
             catch (Exception exc)
             {
                 ModAPI.Log.Write($"[{nameof(ModHunter)}.{nameof(ModHunter)}:{nameof(GetMaxFiveTribalArrows)}] throws exception: {exc.Message}");
             }
         }
-
     }
 }

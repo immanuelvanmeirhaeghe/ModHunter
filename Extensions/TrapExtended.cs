@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace ModHunter
 {
+    /// <summary>
+    /// Modded
+    /// </summary>
     class TrapExtended : Trap
     {
 
@@ -13,9 +16,7 @@ namespace ModHunter
                 m_ArmSoundClips.Add((AudioClip)Resources.Load("Sounds/Traps/snare_trap_arm_02"));
                 m_ArmSoundClips.Add((AudioClip)Resources.Load("Sounds/Traps/snare_trap_arm_03"));
             }
-
             base.Start();
         }
-
     }
 }
