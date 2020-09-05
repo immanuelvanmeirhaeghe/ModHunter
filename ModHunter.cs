@@ -54,13 +54,13 @@ namespace ModHunter
             return s_Instance;
         }
 
-        public static void ShowHUDInfoLog(string itemID, string localizedTextKey)
+        public void ShowHUDInfoLog(string itemID, string localizedTextKey)
         {
             Localization localization = GreenHellGame.Instance.GetLocalization();
             ((HUDMessages)hUDManager.GetHUD(typeof(HUDMessages))).AddMessage(localization.Get(localizedTextKey) + "  " + localization.Get(itemID));
         }
 
-        public static void ShowHUDBigInfo(string text, string header, string textureName)
+        public void ShowHUDBigInfo(string text, string header, string textureName)
         {
             HUDManager hUDManager = HUDManager.Get();
 
@@ -104,7 +104,6 @@ namespace ModHunter
                     InitData();
                     EnableCursor(true);
                 }
-                // toggle menu
                 showUI = !showUI;
                 if (!showUI)
                 {
@@ -147,7 +146,7 @@ namespace ModHunter
                 CloseWindow();
             }
 
-            GUI.Label(new Rect(30f, 190f, 200f, 20f), "All weapon-, armor- and trap blueprints", GUI.skin.label);
+            GUI.Label(new Rect(30f, 190f, 200f, 20f), "Weapon-, armor- and trap blueprints", GUI.skin.label);
             if (GUI.Button(new Rect(280f, 190f, 150f, 20f), "Unlock hunter", GUI.skin.button))
             {
                 OnClickUnlockHunterButton();
