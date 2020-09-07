@@ -143,14 +143,14 @@ namespace ModHunter
 
         private void InitModHunterScreen(int windowID)
         {
-            using (var verticalScope = new GUILayout.VerticalScope($"{ModName}box"))
+            using (var verticalScope = new GUILayout.VerticalScope(GUI.skin.box))
             {
                 if (GUI.Button(new Rect(430f, 0f, 20f, 20f), "X", GUI.skin.button))
                 {
                     CloseWindow();
                 }
 
-                using (var horizontalScope = new GUILayout.HorizontalScope("huntBox"))
+                using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
                     GUILayout.Label("Weapon-, armor- and trap blueprints", GUI.skin.label);
                     if (GUILayout.Button("Unlock hunter", GUI.skin.button, GUILayout.MinWidth(100f), GUILayout.MaxWidth(200f)))
@@ -160,7 +160,7 @@ namespace ModHunter
                     }
                 }
 
-                using (var horizontalScope = new GUILayout.HorizontalScope("tribalBox"))
+                using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
                     GUILayout.Label("Metal axe, bow, spear and obsidian bone blade", GUI.skin.label);
                     if (GUILayout.Button("Get tribal weapons", GUI.skin.button, GUILayout.MinWidth(100f), GUILayout.MaxWidth(200f)))
@@ -170,7 +170,7 @@ namespace ModHunter
                     }
                 }
 
-                using (var horizontalScope = new GUILayout.HorizontalScope("arrowsBox"))
+                using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
                     GUILayout.Label("Add 5 tribal arrows to the backpack", GUI.skin.label);
                     if (GUILayout.Button("5 x tribal arrows", GUI.skin.button, GUILayout.MinWidth(100f), GUILayout.MaxWidth(200f)))
@@ -196,7 +196,7 @@ namespace ModHunter
         {
             if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
             {
-                using (var horizontalScope = new GUILayout.HorizontalScope("actionBox"))
+                using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
                     GUILayout.Label("AI can swim?", GUI.skin.label);
                     UseOptionAI = GUILayout.Toggle(UseOptionAI, "");
@@ -204,7 +204,7 @@ namespace ModHunter
             }
             else
             {
-                using (var verticalScope = new GUILayout.VerticalScope("infoBox"))
+                using (var verticalScope = new GUILayout.VerticalScope(GUI.skin.box))
                 {
                     GUILayout.Label("AI can swim option", GUI.skin.label);
                     GUILayout.Label("is only for single player or when host", GUI.skin.label);
