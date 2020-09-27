@@ -19,9 +19,9 @@ namespace ModHunter
 
         private static readonly string ModName = nameof(ModHunter);
 
-        private bool showUI = false;
+        private bool ShowUI = false;
 
-        public Rect ModHunterScreen = new Rect(10f, 170f, 450f, 150f);
+        public static Rect ModHunterScreen = new Rect(10f, 170f, 450f, 150f);
 
         private static ItemsManager itemsManager;
 
@@ -38,11 +38,22 @@ namespace ModHunter
                     };
         private static List<ItemInfo> m_UnlockedHunterItemInfos = new List<ItemInfo>();
         public bool HasUnlockedHunter { get; private set; }
-        public bool UseOptionF8 { get; private set; }
-        public bool UseOptionAI { get; private set; }
+        public bool InstantFinishConstructionsOption { get; private set; }
+        public bool AICanSwimOption { get; private set; }
 
-        public bool IsModActiveForMultiplayer => FindObjectOfType(typeof(ModManager.ModManager)) != null && ModManager.ModManager.AllowModsForMultiplayer;
-        public bool IsModActiveForSingleplayer => ReplTools.AmIMaster();
+        private bool _isActiveForMultiplayer;
+        public bool IsModActiveForMultiplayer
+        {
+            get => _isActiveForMultiplayer;
+            set => _isActiveForMultiplayer = FindObjectOfType(typeof(ModManager.ModManager)) != null && ModManager.ModManager.AllowModsForMultiplayer;
+        }
+
+        private bool _isActiveForSingleplayer;
+        public bool IsModActiveForSingleplayer
+        {
+            get => _isActiveForSingleplayer;
+            set => _isActiveForSingleplayer = ReplTools.AmIMaster();
+        }
 
         public ModHunter()
         {
@@ -100,22 +111,27 @@ namespace ModHunter
         {
             if (Input.GetKeyDown(KeyCode.Home))
             {
-                if (!showUI)
+                if (!ShowUI)
                 {
                     InitData();
                     EnableCursor(true);
                 }
-                showUI = !showUI;
-                if (!showUI)
+                ToggleShowUI();
+                if (!ShowUI)
                 {
                     EnableCursor(false);
                 }
             }
         }
 
+        private void ToggleShowUI()
+        {
+            ShowUI = !ShowUI;
+        }
+
         private void OnGUI()
         {
-            if (showUI)
+            if (ShowUI)
             {
                 InitData();
                 InitSkinUI();
@@ -180,7 +196,7 @@ namespace ModHunter
                     }
                 }
 
-                CreateAIOption();
+                CanSwimOption();
             }
 
             GUI.DragWindow(new Rect(0f, 0f, 10000f, 10000f));
@@ -188,18 +204,17 @@ namespace ModHunter
 
         private void CloseWindow()
         {
-            showUI = false;
+            ShowUI = false;
             EnableCursor(false);
         }
 
-        private void CreateAIOption()
+        private void CanSwimOption()
         {
             if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
             {
                 using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
-                    GUILayout.Label("AI can swim?", GUI.skin.label);
-                    UseOptionAI = GUILayout.Toggle(UseOptionAI, "");
+                    AICanSwimOption = GUILayout.Toggle(AICanSwimOption, $"AI can swim?", GUI.skin.toggle);
                 }
             }
             else
@@ -210,21 +225,6 @@ namespace ModHunter
                     GUILayout.Label("is only for single player or when host", GUI.skin.label);
                     GUILayout.Label("Host can activate using ModManager.", GUI.skin.label);
                 }
-            }
-        }
-
-        private void CreateF8Option()
-        {
-            if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
-            {
-                GUI.Label(new Rect(30f, 250f, 200f, 20f), "Use F8 to instantly finish", GUI.skin.label);
-                UseOptionF8 = GUI.Toggle(new Rect(280f, 250f, 20f, 20f), UseOptionF8, "");
-            }
-            else
-            {
-                GUI.Label(new Rect(30f, 250f, 330f, 20f), "Use F8 to instantly to finish any constructions", GUI.skin.label);
-                GUI.Label(new Rect(30f, 270f, 330f, 20f), "is only for single player or when host", GUI.skin.label);
-                GUI.Label(new Rect(30f, 290f, 330f, 20f), "Host can activate using ModManager.", GUI.skin.label);
             }
         }
 

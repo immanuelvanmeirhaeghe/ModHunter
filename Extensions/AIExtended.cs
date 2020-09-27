@@ -7,7 +7,7 @@
     {
         protected override void UpdateSwimming()
         {
-            if ((ModHunter.Get().IsModActiveForSingleplayer || ModHunter.Get().IsModActiveForMultiplayer) && ModHunter.Get().UseOptionAI)
+            if ((ModHunter.Get().IsModActiveForSingleplayer || ModHunter.Get().IsModActiveForMultiplayer) && ModHunter.Get().AICanSwimOption)
             {
                 if (!IsDead() && (IsCat() || IsEnemy() || IsPredator()))
                 {
