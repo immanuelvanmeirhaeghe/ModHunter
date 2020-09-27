@@ -41,19 +41,8 @@ namespace ModHunter
         public bool InstantFinishConstructionsOption { get; private set; }
         public bool AICanSwimOption { get; private set; }
 
-        private bool _isActiveForMultiplayer;
-        public bool IsModActiveForMultiplayer
-        {
-            get => _isActiveForMultiplayer;
-            set => _isActiveForMultiplayer = FindObjectOfType(typeof(ModManager.ModManager)) != null && ModManager.ModManager.AllowModsForMultiplayer;
-        }
-
-        private bool _isActiveForSingleplayer;
-        public bool IsModActiveForSingleplayer
-        {
-            get => _isActiveForSingleplayer;
-            set => _isActiveForSingleplayer = ReplTools.AmIMaster();
-        }
+        public bool IsModActiveForMultiplayer => FindObjectOfType(typeof(ModManager.ModManager)) != null && ModManager.ModManager.AllowModsForMultiplayer;
+        public bool IsModActiveForSingleplayer => ReplTools.AmIMaster();
 
         public ModHunter()
         {
@@ -168,8 +157,8 @@ namespace ModHunter
 
                 using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
-                    GUILayout.Label("Weapon-, armor- and trap blueprints", GUI.skin.label);
-                    if (GUILayout.Button("Unlock hunter", GUI.skin.button, GUILayout.MinWidth(100f), GUILayout.MaxWidth(200f)))
+                    GUILayout.Label("Weapon-, armor- and trap blueprints", GUI.skin.label,  GUILayout.MaxWidth(200f));
+                    if (GUILayout.Button("Unlock hunter", GUI.skin.button))
                     {
                         OnClickUnlockHunterButton();
                         CloseWindow();
@@ -178,8 +167,8 @@ namespace ModHunter
 
                 using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
-                    GUILayout.Label("Metal axe, bow, spear and obsidian bone blade", GUI.skin.label);
-                    if (GUILayout.Button("Get tribal weapons", GUI.skin.button, GUILayout.MinWidth(100f), GUILayout.MaxWidth(200f)))
+                    GUILayout.Label("Metal axe, bow, spear and obsidian bone blade", GUI.skin.label, GUILayout.MaxWidth(200f));
+                    if (GUILayout.Button("Get tribal weapons", GUI.skin.button))
                     {
                         OnClickGetTribalWeaponsButton();
                         CloseWindow();
@@ -188,15 +177,15 @@ namespace ModHunter
 
                 using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
                 {
-                    GUILayout.Label("Add 5 tribal arrows to the backpack", GUI.skin.label);
-                    if (GUILayout.Button("5 x tribal arrows", GUI.skin.button, GUILayout.MinWidth(100f), GUILayout.MaxWidth(200f)))
+                    GUILayout.Label("Add 5 tribal arrows to the backpack", GUI.skin.label, GUILayout.MaxWidth(200f));
+                    if (GUILayout.Button("5 x tribal arrows", GUI.skin.button))
                     {
                         OnClickGetTribalArrowsButton();
                         CloseWindow();
                     }
                 }
 
-                CanSwimOption();
+                CanSwimOptionButton();
             }
 
             GUI.DragWindow(new Rect(0f, 0f, 10000f, 10000f));
@@ -208,7 +197,7 @@ namespace ModHunter
             EnableCursor(false);
         }
 
-        private void CanSwimOption()
+        private void CanSwimOptionButton()
         {
             if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
             {
