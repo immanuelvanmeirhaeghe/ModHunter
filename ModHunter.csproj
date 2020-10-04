@@ -346,7 +346,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\AIExtended.cs" />
     <Compile Include="Extensions\PlayerExtended.cs" />
     <Compile Include="Extensions\TrapExtended.cs" />
     <Compile Include="ModHunter.cs" />

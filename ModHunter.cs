@@ -21,7 +21,7 @@ namespace ModHunter
 
         private bool ShowUI = false;
 
-        public static Rect ModHunterScreen = new Rect(10f, 170f, 450f, 150f);
+        public static Rect ModHunterScreen = new Rect(Screen.width / 20f, Screen.height / 20f, 450f, 150f);
 
         private static ItemsManager itemsManager;
 
@@ -39,10 +39,30 @@ namespace ModHunter
         private static List<ItemInfo> m_UnlockedHunterItemInfos = new List<ItemInfo>();
         public bool HasUnlockedHunter { get; private set; }
         public bool InstantFinishConstructionsOption { get; private set; }
-        public bool AICanSwimOption { get; private set; }
 
-        public bool IsModActiveForMultiplayer => FindObjectOfType(typeof(ModManager.ModManager)) != null && ModManager.ModManager.AllowModsForMultiplayer;
+        public bool IsModActiveForMultiplayer { get; private set; }
         public bool IsModActiveForSingleplayer => ReplTools.AmIMaster();
+
+        public static string HUDBigInfoMessage(string message) => $"<color=#{ColorUtility.ToHtmlStringRGBA(Color.red)}>System</color>\n{message}";
+
+        public static string AddedToInventoryMessage(int count, ItemInfo itemInfo)
+            => $"<color=#{ColorUtility.ToHtmlStringRGBA(Color.green)}>Added {count} x {itemInfo.GetNameToDisplayLocalized()}</color> to inventory.";
+
+        public void Start()
+        {
+            ModManager.ModManager.onPermissionValueChanged += ModManager_onPermissionValueChanged;
+        }
+
+        private void ModManager_onPermissionValueChanged(bool optionValue)
+        {
+            IsModActiveForMultiplayer = optionValue;
+            ShowHUDBigInfo(
+                          (optionValue ?
+                            HUDBigInfoMessage($"<color=#{ColorUtility.ToHtmlStringRGBA(Color.green)}>Permission to use mods for multiplayer was granted!</color>")
+                            : HUDBigInfoMessage($"<color=#{ColorUtility.ToHtmlStringRGBA(Color.yellow)}>Permission to use mods for multiplayer was revoked!</color>")),
+                           $"{ModName} Info",
+                           HUDInfoLogTextureType.Count.ToString());
+        }
 
         public ModHunter()
         {
@@ -63,8 +83,6 @@ namespace ModHunter
 
         public void ShowHUDBigInfo(string text, string header, string textureName)
         {
-            HUDManager hUDManager = HUDManager.Get();
-
             HUDBigInfo hudBigInfo = (HUDBigInfo)hUDManager.GetHUD(typeof(HUDBigInfo));
             HUDBigInfoData hudBigInfoData = new HUDBigInfoData
             {
@@ -184,8 +202,6 @@ namespace ModHunter
                         CloseWindow();
                     }
                 }
-
-                CanSwimOptionButton();
             }
 
             GUI.DragWindow(new Rect(0f, 0f, 10000f, 10000f));
@@ -195,26 +211,6 @@ namespace ModHunter
         {
             ShowUI = false;
             EnableCursor(false);
-        }
-
-        private void CanSwimOptionButton()
-        {
-            if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
-            {
-                using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
-                {
-                    AICanSwimOption = GUILayout.Toggle(AICanSwimOption, $"AI can swim?", GUI.skin.toggle);
-                }
-            }
-            else
-            {
-                using (var verticalScope = new GUILayout.VerticalScope(GUI.skin.box))
-                {
-                    GUILayout.Label("AI can swim option", GUI.skin.label);
-                    GUILayout.Label("is only for single player or when host", GUI.skin.label);
-                    GUILayout.Label("Host can activate using ModManager.", GUI.skin.label);
-                }
-            }
         }
 
         private void OnClickUnlockHunterButton()
@@ -276,7 +272,11 @@ namespace ModHunter
                 }
                 else
                 {
-                    ShowHUDBigInfo("All hunter items were already unlocked!", $"{ModName}  Info", HUDInfoLogTextureType.Count.ToString());
+                    ShowHUDBigInfo(
+                        HUDBigInfoMessage(
+                            $"<color=#{ColorUtility.ToHtmlStringRGBA(Color.yellow)}>All hunter items were already unlocked!</color>"),
+                        $"{ModName} Info",
+                        HUDInfoLogTextureType.Count.ToString());
                 }
             }
             catch (Exception exc)
@@ -294,7 +294,10 @@ namespace ModHunter
                     ItemInfo tribalWeaponItemInfo = itemsManager.GetInfo(tribalWeaponItemID);
                     itemsManager.UnlockItemInfo(tribalWeaponItemInfo.m_ID.ToString());
                     player.AddItemToInventory(tribalWeaponItemInfo.m_ID.ToString());
-                    ShowHUDBigInfo($"Added 1 x {tribalWeaponItemInfo.GetNameToDisplayLocalized()} to inventory", $"{ModName} Info", HUDInfoLogTextureType.Count.ToString());
+                    ShowHUDBigInfo(
+                         HUDBigInfoMessage(AddedToInventoryMessage(1, tribalWeaponItemInfo)),
+                         $"{ModName} Info",
+                         HUDInfoLogTextureType.Count.ToString());
                 }
             }
             catch (Exception exc)
@@ -317,7 +320,10 @@ namespace ModHunter
                 {
                     player.AddItemToInventory(tribalArrowItemInfo.m_ID.ToString());
                 }
-                ShowHUDBigInfo($"Added {count} x {tribalArrowItemInfo.GetNameToDisplayLocalized()} to inventory", $"{ModName} Info", HUDInfoLogTextureType.Count.ToString());
+                ShowHUDBigInfo(
+                         HUDBigInfoMessage(AddedToInventoryMessage(count, tribalArrowItemInfo)),
+                         $"{ModName} Info",
+                         HUDInfoLogTextureType.Count.ToString());
             }
             catch (Exception exc)
             {
