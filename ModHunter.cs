@@ -179,7 +179,6 @@ namespace ModHunter
                     if (GUILayout.Button("Unlock hunter", GUI.skin.button))
                     {
                         OnClickUnlockHunterButton();
-                        CloseWindow();
                     }
                 }
 
@@ -189,7 +188,6 @@ namespace ModHunter
                     if (GUILayout.Button("Get tribal weapons", GUI.skin.button))
                     {
                         OnClickGetTribalWeaponsButton();
-                        CloseWindow();
                     }
                 }
 
@@ -199,11 +197,9 @@ namespace ModHunter
                     if (GUILayout.Button("5 x tribal arrows", GUI.skin.button))
                     {
                         OnClickGetTribalArrowsButton();
-                        CloseWindow();
                     }
                 }
             }
-
             GUI.DragWindow(new Rect(0f, 0f, 10000f, 10000f));
         }
 
@@ -221,7 +217,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickUnlockHunterButton)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickUnlockHunterButton)}] throws exception:\n{exc.Message}");
             }
         }
 
@@ -233,7 +229,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickGetTribalWeaponsButton)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickGetTribalWeaponsButton)}] throws exception:\n{exc.Message}");
             }
         }
 
@@ -245,7 +241,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickGetTribalArrowsButton)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickGetTribalArrowsButton)}] throws exception:\n{exc.Message}");
             }
         }
 
@@ -281,7 +277,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(UnlockHunter)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(UnlockHunter)}] throws exception:\n{exc.Message}");
             }
         }
 
@@ -302,7 +298,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(GetTribalMeleeWeapons)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(GetTribalMeleeWeapons)}] throws exception:\n{exc.Message}");
             }
         }
 
@@ -327,7 +323,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(GetMaxFiveTribalArrows)}] throws exception: {exc.Message}");
+                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(GetMaxFiveTribalArrows)}] throws exception:\n{exc.Message}");
             }
         }
     }
