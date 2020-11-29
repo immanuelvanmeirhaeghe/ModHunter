@@ -179,7 +179,7 @@ namespace ModHunter
 
         private void InitModHunterScreen(int windowID)
         {
-            using (var verticalScope = new GUILayout.VerticalScope(GUI.skin.box))
+            using (var modContentScope = new GUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.MinHeight(ModScreenMinHeight), GUILayout.MaxHeight(ModScreenMaxHeight)))
             {
                 ScreenMenuBox();
                 if (!IsMinimized)
@@ -224,8 +224,8 @@ namespace ModHunter
         {
             using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
             {
-                GUILayout.Label("Add 5 tribal arrows to the backpack", GUI.skin.label, GUILayout.MaxWidth(200f));
-                if (GUILayout.Button("5 x tribal arrows", GUI.skin.button))
+                GUILayout.Label("Add 5 tribal arrows to the backpack", GUI.skin.label);
+                if (GUILayout.Button("5 x tribal arrows", GUI.skin.button, GUILayout.MaxWidth(200f)))
                 {
                     OnClickGetTribalArrowsButton();
                 }
@@ -236,8 +236,8 @@ namespace ModHunter
         {
             using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
             {
-                GUILayout.Label("Metal axe, bow, spear and obsidian bone blade", GUI.skin.label, GUILayout.MaxWidth(200f));
-                if (GUILayout.Button("Get tribal weapons", GUI.skin.button))
+                GUILayout.Label("Metal axe, bow, spear and obsidian bone blade", GUI.skin.label);
+                if (GUILayout.Button("Get tribal weapons", GUI.skin.button, GUILayout.MaxWidth(200f)))
                 {
                     OnClickGetTribalWeaponsButton();
                 }
@@ -248,8 +248,8 @@ namespace ModHunter
         {
             using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
             {
-                GUILayout.Label("Weapon-, armor- and trap blueprints", GUI.skin.label, GUILayout.MaxWidth(200f));
-                if (GUILayout.Button("Unlock hunter", GUI.skin.button))
+                GUILayout.Label("Weapon-, armor- and trap blueprints", GUI.skin.label);
+                if (GUILayout.Button("Unlock hunter", GUI.skin.button, GUILayout.MaxWidth(200f)))
                 {
                     OnClickUnlockHunterButton();
                 }
