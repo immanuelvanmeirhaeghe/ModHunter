@@ -28,13 +28,16 @@ namespace ModHunter
         private static readonly float ModScreenTotalWidth = 500f;
         private static readonly float ModScreenTotalHeight = 150f;
         private static readonly float ModScreenMinWidth = 50f;
-        private static readonly float ModScreenMinHeight = 30f;
-        private static readonly float ModScreenMaxHeight = 180f;
+        private static readonly float ModScreenMaxWidth = 550f;
+        private static readonly float ModScreenMinHeight = 50f;
+        private static readonly float ModScreenMaxHeight = 200f;
 
+        private static float ModScreenStartPositionX { get; set; } = (Screen.width - ModScreenMaxWidth) % ModScreenTotalWidth;
+        private static float ModScreenStartPositionY { get; set; } = (Screen.height - ModScreenMaxHeight) % ModScreenTotalHeight;
         private static bool IsMinimized { get; set; } = false;
         private bool ShowUI = false;
 
-        public static Rect ModHunterScreen = new Rect(Screen.width / 6f, Screen.height / 6f, ModScreenTotalWidth, ModScreenTotalHeight);
+        public static Rect ModHunterScreen = new Rect(ModScreenStartPositionX, ModScreenStartPositionY, ModScreenTotalWidth, ModScreenTotalHeight);
 
         private static ItemsManager LocalItemsManager;
         private static Player LocalPlayer;
@@ -180,7 +183,14 @@ namespace ModHunter
 
         private void InitModHunterScreen(int windowID)
         {
-            using (var modContentScope = new GUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.MinHeight(ModScreenMinHeight), GUILayout.MaxHeight(ModScreenMaxHeight)))
+            using (var modContentScope = new GUILayout.VerticalScope(
+                                                                                                        GUI.skin.box,
+                                                                                                        GUILayout.ExpandWidth(true),
+                                                                                                        GUILayout.MinWidth(ModScreenMinWidth),
+                                                                                                        GUILayout.MaxWidth(ModScreenMaxWidth),
+                                                                                                        GUILayout.ExpandHeight(true),
+                                                                                                        GUILayout.MinHeight(ModScreenMinHeight),
+                                                                                                        GUILayout.MaxHeight(ModScreenMaxHeight)))
             {
                 ScreenMenuBox();
                 if (!IsMinimized)
@@ -210,12 +220,14 @@ namespace ModHunter
         {
             if (!IsMinimized)
             {
-                ModHunterScreen.Set(ModHunterScreen.x, Screen.height - ModScreenMinHeight, ModScreenMinWidth, ModScreenMinHeight);
+                ModScreenStartPositionX = ModHunterScreen.x;
+                ModScreenStartPositionY = ModHunterScreen.y;
+                ModHunterScreen.Set(ModHunterScreen.x, ModHunterScreen.y, ModScreenMinWidth, ModScreenMinHeight);
                 IsMinimized = true;
             }
             else
             {
-                ModHunterScreen.Set(ModHunterScreen.x, Screen.height / ModScreenMinHeight, ModScreenTotalWidth, ModScreenTotalHeight);
+                ModHunterScreen.Set(ModScreenStartPositionX, ModScreenStartPositionY, ModScreenTotalWidth, ModScreenTotalHeight);
                 IsMinimized = false;
             }
             InitWindow();
