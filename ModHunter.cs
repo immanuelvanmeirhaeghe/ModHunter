@@ -27,6 +27,7 @@ namespace ModHunter
         private static readonly string ModName = nameof(ModHunter);
         private static readonly float ModScreenTotalWidth = 500f;
         private static readonly float ModScreenTotalHeight = 150f;
+        private static readonly float ModScreenMinWidth = 50f;
         private static readonly float ModScreenMinHeight = 30f;
         private static readonly float ModScreenMaxHeight = 180f;
 
@@ -209,7 +210,7 @@ namespace ModHunter
         {
             if (!IsMinimized)
             {
-                ModHunterScreen.Set(ModHunterScreen.x, Screen.height - ModScreenMinHeight, ModScreenTotalWidth, ModScreenMinHeight);
+                ModHunterScreen.Set(ModHunterScreen.x, Screen.height - ModScreenMinHeight, ModScreenMinWidth, ModScreenMinHeight);
                 IsMinimized = true;
             }
             else
