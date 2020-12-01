@@ -27,7 +27,7 @@ namespace ModHunter
         private static readonly string ModName = nameof(ModHunter);
         private static readonly float ModScreenTotalWidth = 500f;
         private static readonly float ModScreenTotalHeight = 150f;
-        private static readonly float ModScreenMinWidth = 50f;
+        private static readonly float ModScreenMinWidth = 450f;
         private static readonly float ModScreenMaxWidth = 550f;
         private static readonly float ModScreenMinHeight = 50f;
         private static readonly float ModScreenMaxHeight = 200f;
@@ -51,10 +51,10 @@ namespace ModHunter
                         ItemID.Tribe_Spear
                     };
         public static List<ItemInfo> UnlockedHunterItemInfos = new List<ItemInfo>();
-        public bool HasUnlockedHunter { get; private set; }
+        public bool HasUnlockedHunter { get; private set; } = false;
         public bool InstantFinishConstructionsOption { get; private set; }
 
-        public bool IsModActiveForMultiplayer { get; private set; }
+        public bool IsModActiveForMultiplayer { get; private set; } = false;
         public bool IsModActiveForSingleplayer => ReplTools.AmIMaster();
 
         public static string AlreadyUnlockedHunter() => $"All hunter items were already unlocked!";
@@ -166,7 +166,13 @@ namespace ModHunter
         private void InitWindow()
         {
             int wid = GetHashCode();
-            ModHunterScreen = GUILayout.Window(wid, ModHunterScreen, InitModHunterScreen, $"{ModName}", GUI.skin.window);
+            ModHunterScreen = GUILayout.Window(wid, ModHunterScreen, InitModHunterScreen, ModName, GUI.skin.window,
+                                                                                                        GUILayout.ExpandWidth(true),
+                                                                                                        GUILayout.MinWidth(ModScreenMinWidth),
+                                                                                                        GUILayout.MaxWidth(ModScreenMaxWidth),
+                                                                                                        GUILayout.ExpandHeight(true),
+                                                                                                        GUILayout.MinHeight(ModScreenMinHeight),
+                                                                                                        GUILayout.MaxHeight(ModScreenMaxHeight));
         }
 
         private void InitData()
@@ -183,14 +189,10 @@ namespace ModHunter
 
         private void InitModHunterScreen(int windowID)
         {
-            using (var modContentScope = new GUILayout.VerticalScope(
-                                                                                                        GUI.skin.box,
-                                                                                                        GUILayout.ExpandWidth(true),
-                                                                                                        GUILayout.MinWidth(ModScreenMinWidth),
-                                                                                                        GUILayout.MaxWidth(ModScreenMaxWidth),
-                                                                                                        GUILayout.ExpandHeight(true),
-                                                                                                        GUILayout.MinHeight(ModScreenMinHeight),
-                                                                                                        GUILayout.MaxHeight(ModScreenMaxHeight)))
+            ModScreenStartPositionX = ModHunterScreen.x;
+            ModScreenStartPositionY = ModHunterScreen.y;
+
+            using (var modContentScope = new GUILayout.VerticalScope(GUI.skin.box))
             {
                 ScreenMenuBox();
                 if (!IsMinimized)
@@ -220,14 +222,12 @@ namespace ModHunter
         {
             if (!IsMinimized)
             {
-                ModScreenStartPositionX = ModHunterScreen.x;
-                ModScreenStartPositionY = ModHunterScreen.y;
-                ModHunterScreen.Set(ModHunterScreen.x, ModHunterScreen.y, ModScreenMinWidth, ModScreenMinHeight);
+                ModHunterScreen = new Rect(ModScreenStartPositionX, ModScreenStartPositionY, ModScreenTotalWidth, ModScreenMinHeight);
                 IsMinimized = true;
             }
             else
             {
-                ModHunterScreen.Set(ModScreenStartPositionX, ModScreenStartPositionY, ModScreenTotalWidth, ModScreenTotalHeight);
+                ModHunterScreen = new Rect(ModScreenStartPositionX, ModScreenStartPositionY, ModScreenTotalWidth, ModScreenTotalHeight);
                 IsMinimized = false;
             }
             InitWindow();
