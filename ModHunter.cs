@@ -1,24 +1,19 @@
 ﻿using Enums;
+using ModHunter.Enums;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModHunter
 {
-    public enum MessageType
-    {
-        Info,
-        Warning,
-        Error
-    }
-
     /// <summary>
-    /// ModHunter is a mod for Green Hell that allows a player to unlock all weapons, armor and traps.
-	/// A player can get tribal weapons.
-    /// It also gives the AI the possibility to swim if enabled.
-    /// (only in single player mode - Use ModManager for multiplayer).
-    /// Enable the mod UI by pressing Home.
+    /// ModHunter is a mod for Green Hell that allows a player to unlock all blueprints for weapons, armor and traps
+    /// and to spawn in tribal weapons.
+    /// Press P (default) or the key configurable in ModAPI to open the main mod screen.
     /// </summary>
     public class ModHunter : MonoBehaviour
     {
@@ -32,8 +27,10 @@ namespace ModHunter
         private static readonly float ModScreenMinHeight = 50f;
         private static readonly float ModScreenMaxHeight = 200f;
 
-        private static float ModScreenStartPositionX { get; set; } = (Screen.width - ModScreenMaxWidth) % ModScreenTotalWidth;
-        private static float ModScreenStartPositionY { get; set; } = (Screen.height - ModScreenMaxHeight) % ModScreenTotalHeight;
+        private Color DefaultGuiColor = GUI.color;
+
+        private static float ModScreenStartPositionX { get; set; } = Screen.width / 5f;
+        private static float ModScreenStartPositionY { get; set; } = Screen.height / 5f;
         private static bool IsMinimized { get; set; } = false;
         private bool ShowUI = false;
 
@@ -45,7 +42,8 @@ namespace ModHunter
 
         public static List<ItemID> TribalWeaponItemIDs = new List<ItemID>
                     {
-                        ItemID.metal_axe,
+                        ItemID.Tribe_Axe,
+                        ItemID.Tribe_Arrow,
                         ItemID.Obsidian_Bone_Blade,
                         ItemID.Tribe_Bow,
                         ItemID.Tribe_Spear
@@ -57,43 +55,23 @@ namespace ModHunter
         public bool IsModActiveForMultiplayer { get; private set; } = false;
         public bool IsModActiveForSingleplayer => ReplTools.AmIMaster();
 
-        public static string AlreadyUnlockedHunter() => $"All hunter items were already unlocked!";
-        public static string AddedToInventoryMessage(int count, ItemInfo itemInfo) => $"Added {count} x {itemInfo.GetNameToDisplayLocalized()} to inventory.";
-        public static string PermissionChangedMessage(string permission) => $"Permission to use mods and cheats in multiplayer was {permission}!";
+        private void HandleException(Exception exc, string methodName)
+        {
+            string info = $"[{ModName}:{methodName}] throws exception:\n{exc.Message}";
+            ModAPI.Log.Write(info);
+            ShowHUDBigInfo(HUDBigInfoMessage(info, MessageType.Error, Color.red));
+        }
+
+        public static string AlreadyUnlockedHunter()
+            => $"All hunter items were already unlocked!";
+        public static string OnlyForSinglePlayerOrHostMessage()
+                   => $"Only available for single player or when host. Host can activate using ModManager.";
+        public static string AddedToInventoryMessage(int count, ItemInfo itemInfo)
+            => $"Added {count} x {itemInfo.GetNameToDisplayLocalized()} to inventory.";
+        public static string PermissionChangedMessage(string permission, string reason)
+            => $"Permission to use mods and cheats in multiplayer was {permission} because {reason}.";
         public static string HUDBigInfoMessage(string message, MessageType messageType, Color? headcolor = null)
             => $"<color=#{ (headcolor != null ? ColorUtility.ToHtmlStringRGBA(headcolor.Value) : ColorUtility.ToHtmlStringRGBA(Color.red))  }>{messageType}</color>\n{message}";
-
-        public void Start()
-        {
-            ModManager.ModManager.onPermissionValueChanged += ModManager_onPermissionValueChanged;
-        }
-
-        private void ModManager_onPermissionValueChanged(bool optionValue)
-        {
-            IsModActiveForMultiplayer = optionValue;
-            ShowHUDBigInfo(
-                          (optionValue ?
-                            HUDBigInfoMessage(PermissionChangedMessage($"granted"), MessageType.Info, Color.green)
-                            : HUDBigInfoMessage(PermissionChangedMessage($"revoked"), MessageType.Info, Color.yellow))
-                            );
-        }
-
-        public ModHunter()
-        {
-            useGUILayout = true;
-            Instance = this;
-        }
-
-        public static ModHunter Get()
-        {
-            return Instance;
-        }
-
-        public void ShowHUDInfoLog(string itemID, string localizedTextKey)
-        {
-            Localization localization = GreenHellGame.Instance.GetLocalization();
-            ((HUDMessages)LocalHUDManager.GetHUD(typeof(HUDMessages))).AddMessage(localization.Get(localizedTextKey) + "  " + localization.Get(itemID));
-        }
 
         public void ShowHUDBigInfo(string text)
         {
@@ -110,6 +88,85 @@ namespace ModHunter
             };
             hudBigInfo.AddInfo(hudBigInfoData);
             hudBigInfo.Show(true);
+        }
+
+        public void ShowHUDInfoLog(string itemID, string localizedTextKey)
+        {
+            var localization = GreenHellGame.Instance.GetLocalization();
+            HUDMessages hUDMessages = (HUDMessages)LocalHUDManager.GetHUD(typeof(HUDMessages));
+            hUDMessages.AddMessage(
+                $"{localization.Get(localizedTextKey)}  {localization.Get(itemID)}"
+                );
+        }
+
+        private static readonly string RuntimeConfigurationFile = Path.Combine(Application.dataPath.Replace("GH_Data", "Mods"), "RuntimeConfiguration.xml");
+        private static KeyCode ModKeybindingId { get; set; } = KeyCode.P;
+        private KeyCode GetConfigurableKey(string buttonId)
+        {
+            KeyCode configuredKeyCode = default;
+            string configuredKeybinding = string.Empty;
+
+            try
+            {
+                if (File.Exists(RuntimeConfigurationFile))
+                {
+                    using (var xmlReader = XmlReader.Create(new StreamReader(RuntimeConfigurationFile)))
+                    {
+                        while (xmlReader.Read())
+                        {
+                            if (xmlReader["ID"] == ModName)
+                            {
+                                if (xmlReader.ReadToFollowing(nameof(Button)) && xmlReader["ID"] == buttonId)
+                                {
+                                    configuredKeybinding = xmlReader.ReadElementContentAsString();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                configuredKeybinding = configuredKeybinding?.Replace("NumPad", "Keypad").Replace("Oem", "");
+
+                configuredKeyCode = (KeyCode)(!string.IsNullOrEmpty(configuredKeybinding)
+                                                            ? Enum.Parse(typeof(KeyCode), configuredKeybinding)
+                                                            : GetType()?.GetProperty(buttonId)?.GetValue(this));
+                return configuredKeyCode;
+            }
+            catch (Exception exc)
+            {
+                HandleException(exc, nameof(GetConfigurableKey));
+                configuredKeyCode = (KeyCode)(GetType()?.GetProperty(buttonId)?.GetValue(this));
+                return configuredKeyCode;
+            }
+        }
+
+        public void Start()
+        {
+            ModManager.ModManager.onPermissionValueChanged += ModManager_onPermissionValueChanged;
+            ModKeybindingId = GetConfigurableKey(nameof(ModKeybindingId));
+        }
+
+        private void ModManager_onPermissionValueChanged(bool optionValue)
+        {
+            string reason = optionValue ? "the game host allowed usage" : "the game host did not allow usage";
+            IsModActiveForMultiplayer = optionValue;
+
+            ShowHUDBigInfo(
+                          optionValue ?
+                            HUDBigInfoMessage(PermissionChangedMessage($"granted", $"{reason}"), MessageType.Info, Color.green)
+                            : HUDBigInfoMessage(PermissionChangedMessage($"revoked", $"{reason}"), MessageType.Info, Color.yellow)
+                            );
+        }
+
+        public ModHunter()
+        {
+            useGUILayout = true;
+            Instance = this;
+        }
+
+        public static ModHunter Get()
+        {
+            return Instance;
         }
 
         private void EnableCursor(bool blockPlayer = false)
@@ -133,7 +190,7 @@ namespace ModHunter
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Home))
+            if (Input.GetKeyDown(ModKeybindingId))
             {
                 if (!ShowUI)
                 {
@@ -197,9 +254,8 @@ namespace ModHunter
                 ScreenMenuBox();
                 if (!IsMinimized)
                 {
+                    ModOptionsBox();
                     UnlockHunterBox();
-                    GetTribalWeaponsBox();
-                    GetTribalArrowsBox();
                 }
             }
             GUI.DragWindow(new Rect(0f, 0f, 10000f, 10000f));
@@ -233,24 +289,92 @@ namespace ModHunter
             InitWindow();
         }
 
-        private void GetTribalArrowsBox()
+        private void ModOptionsBox()
+        {
+            if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
+            {
+                using (var optionsScope = new GUILayout.VerticalScope(GUI.skin.box))
+                {
+                    GUILayout.Label($"To toggle the mod main UI, press [{ModKeybindingId}]", GUI.skin.label);
+
+                    MultiplayerOptionBox();
+                }
+            }
+            else
+            {
+                OnlyForSingleplayerOrWhenHostBox();
+            }
+        }
+
+        private void OnlyForSingleplayerOrWhenHostBox()
+        {
+            using (var infoScope = new GUILayout.HorizontalScope(GUI.skin.box))
+            {
+                GUI.color = Color.yellow;
+                GUILayout.Label(OnlyForSinglePlayerOrHostMessage(), GUI.skin.label);
+            }
+        }
+
+        private void MultiplayerOptionBox()
+        {
+            try
+            {
+                using (var multiplayeroptionsScope = new GUILayout.VerticalScope(GUI.skin.box))
+                {
+                    GUILayout.Label("Multiplayer options: ", GUI.skin.label);
+                    string multiplayerOptionMessage = string.Empty;
+                    if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
+                    {
+                        GUI.color = Color.green;
+                        if (IsModActiveForSingleplayer)
+                        {
+                            multiplayerOptionMessage = $"you are the game host";
+                        }
+                        if (IsModActiveForMultiplayer)
+                        {
+                            multiplayerOptionMessage = $"the game host allowed usage";
+                        }
+                        _ = GUILayout.Toggle(true, PermissionChangedMessage($"granted", multiplayerOptionMessage), GUI.skin.toggle);
+                    }
+                    else
+                    {
+                        GUI.color = Color.yellow;
+                        if (!IsModActiveForSingleplayer)
+                        {
+                            multiplayerOptionMessage = $"you are not the game host";
+                        }
+                        if (!IsModActiveForMultiplayer)
+                        {
+                            multiplayerOptionMessage = $"the game host did not allow usage";
+                        }
+                        _ = GUILayout.Toggle(false, PermissionChangedMessage($"revoked", $"{multiplayerOptionMessage}"), GUI.skin.toggle);
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                HandleException(exc, nameof(MultiplayerOptionBox));
+            }
+        }
+
+        private void TribalArrowsBox()
         {
             using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
             {
                 GUILayout.Label("Add 5 tribal arrows to the backpack", GUI.skin.label);
-                if (GUILayout.Button("5 x tribal arrows", GUI.skin.button, GUILayout.MaxWidth(200f)))
+                if (GUILayout.Button("5 x tribal arrows", GUI.skin.button))
                 {
                     OnClickGetTribalArrowsButton();
                 }
             }
         }
 
-        private void GetTribalWeaponsBox()
+        private void TribalWeaponsBox()
         {
             using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
             {
-                GUILayout.Label("Metal axe, bow, spear and obsidian bone blade", GUI.skin.label);
-                if (GUILayout.Button("Get tribal weapons", GUI.skin.button, GUILayout.MaxWidth(200f)))
+                GUILayout.Label("Tribal axe, bow, spear and obsidian bone blade", GUI.skin.label);
+                if (GUILayout.Button("Get tribal weapons", GUI.skin.button))
                 {
                     OnClickGetTribalWeaponsButton();
                 }
@@ -259,13 +383,28 @@ namespace ModHunter
 
         private void UnlockHunterBox()
         {
-            using (var horizontalScope = new GUILayout.HorizontalScope(GUI.skin.box))
+            if (IsModActiveForSingleplayer || IsModActiveForMultiplayer)
             {
-                GUILayout.Label("Weapon-, armor- and trap blueprints", GUI.skin.label);
-                if (GUILayout.Button("Unlock hunter", GUI.skin.button, GUILayout.MaxWidth(200f)))
+                using (var farmeritemsScope = new GUILayout.VerticalScope(GUI.skin.box))
                 {
-                    OnClickUnlockHunterButton();
+                    GUI.color = DefaultGuiColor;
+                    GUILayout.Label($"Hunter tools and other items: ", GUI.skin.label);
+                    using (var unlocktoolsScope = new GUILayout.VerticalScope(GUI.skin.box))
+                    {
+                        GUILayout.Label("Weapon-, armor- and trap blueprints", GUI.skin.label);
+                        if (GUILayout.Button("Unlock hunter", GUI.skin.button, GUILayout.MaxWidth(200f)))
+                        {
+                            OnClickUnlockHunterButton();
+                        }
+                    }
+
+                    TribalWeaponsBox();
+                    TribalArrowsBox();
                 }
+            }
+            else
+            {
+                OnlyForSingleplayerOrWhenHostBox();
             }
         }
 
@@ -283,7 +422,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickUnlockHunterButton)}] throws exception:\n{exc.Message}");
+                HandleException(exc, nameof(OnClickUnlockHunterButton));
             }
         }
 
@@ -295,7 +434,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickGetTribalWeaponsButton)}] throws exception:\n{exc.Message}");
+                HandleException(exc, nameof(OnClickGetTribalWeaponsButton));
             }
         }
 
@@ -307,7 +446,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}.{ModName}:{nameof(OnClickGetTribalArrowsButton)}] throws exception:\n{exc.Message}");
+                HandleException(exc, nameof(OnClickGetTribalArrowsButton));
             }
         }
 
@@ -339,7 +478,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}:{nameof(UnlockHunter)}] throws exception:\n{exc.Message}");
+                HandleException(exc, nameof(UnlockHunter));
             }
         }
 
@@ -357,7 +496,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}:{nameof(GetTribalMeleeWeapons)}] throws exception:\n{exc.Message}");
+                HandleException(exc, nameof(GetTribalMeleeWeapons));
             }
         }
 
@@ -379,7 +518,7 @@ namespace ModHunter
             }
             catch (Exception exc)
             {
-                ModAPI.Log.Write($"[{ModName}:{nameof(GetMaxFiveTribalArrows)}] throws exception:\n{exc.Message}");
+                HandleException(exc, nameof(GetMaxFiveTribalArrows));
             }
         }
     }
